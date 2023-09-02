@@ -35,7 +35,7 @@ public:
         int version;
         int effectVolume;
         int boardSize;
-        game::speeds gameSpeed;
+        game::difficulty difficulty;
         wchar_t name[20];
     };
 private:
@@ -67,6 +67,7 @@ public:
     bool clearScene();
     void onMove(D2D1_POINT_2F moved);
     void onClick(D2D1_POINT_2F clicked);
+    void onRClick(D2D1_POINT_2F clicked);
     void onCapture(D2D1_POINT_2F captrue);
     void onKey(wchar_t inputChar);
     void keyDown(wchar_t inputChar);

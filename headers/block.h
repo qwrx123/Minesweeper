@@ -20,6 +20,7 @@ public:
 		cyan,
 		purple,
 		orange,
+		lightGray,
 		count
 	};
 	enum style

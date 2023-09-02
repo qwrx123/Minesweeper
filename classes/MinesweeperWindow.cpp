@@ -60,6 +60,12 @@ LRESULT MinesweeperWindow::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam
 		myScene->onClick(clickPoint);
 		return 0;
 	}
+	case WM_RBUTTONUP:
+	{
+		D2D1_POINT_2F clickPoint{(float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam)};
+		myScene->onRClick(clickPoint);
+		return 0;
+	}
 	case WM_MOUSEMOVE:
 	{
 		D2D1_POINT_2F movePoint{(float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam)};
@@ -92,7 +98,7 @@ bool MinesweeperWindow::forceRender()
     return true;
 }
 
-PCWSTR  MinesweeperWindow::ClassName() const { return L"Snake"; }
+PCWSTR  MinesweeperWindow::ClassName() const { return L"Minesweeper"; }
 
 BOOL MinesweeperWindow::Create(
     PCWSTR lpWindowName,

@@ -16,29 +16,18 @@
 class game
 {
 public:
-struct currentBlocks {
-	int x;
-	int y;
-	int type;
-	int turn;
-};
-// the drop down blocks you see
-struct ghostBlocks {
-	int x = 0;
-	int y = 0;
-	int type = 15;
-};
 struct leaderboard {
-	wchar_t name[3][20];
-	int score[3];
-	wchar_t scoreText[3][10];
+	wchar_t name[4][20];
+	int score[4];
+	wchar_t scoreText[4][10];
 };
-enum speeds
+enum difficulty
 {
-	slow,
-	medium,
-	fast,
-	numSpeeds
+	easy,
+	normal,
+	hard,
+	master,
+	numDifficulty
 };
 struct gameMetrics
 {
@@ -47,9 +36,9 @@ struct gameMetrics
 	wchar_t scoreText[10];
 	int time;
 	wchar_t timeText[10];
-	speeds speed;
+	difficulty difficulty;
 };
-static const float floatSpeeds[numSpeeds];
+static const int numMines[numDifficulty];
 private:
 textBox scoreLabel;
 textBox scoreDisplay;
@@ -61,18 +50,26 @@ int blocksWidth;
 int blocksHeight;
 minesweeperBlock* renderScreenBlocks[25][25];
 static const block::location gameSquareBoundary;
+RECT screenSize;
+block::location game::gameSquare;
 RECT currentScreenSize;
 Time countTime;
 float count;
 bool keys[0xffff];
 bool dead;
 bool win;
+bool firstClick;
+int numBombs;
 songManager effectGenerator;
 public:
-game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], int width, int height, game::speeds currentSpeed, songManager& effectGenerator);
+game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], int width, int height, game::difficulty currentDifficulty, songManager& effectGenerator);
 ~game();
 void render();
 void gameLoop();
+void onMove(D2D1_POINT_2F moved);
+void onClick(D2D1_POINT_2F clicked);
+void onRClick(D2D1_POINT_2F clicked);
+void onCapture(D2D1_POINT_2F captrue);
 void keyDown(wchar_t inputChar);
 void onKey(wchar_t inputChar);
 void resize(RECT newScreen);
@@ -81,5 +78,6 @@ bool testWin();
 void resetDeltaTime();
 void populateMetrics(game::gameMetrics& populatedMetrics);
 private:
-void calculateApple();
+void calculateBombs();
+void updateBoard(int x, int y);
 };

@@ -127,6 +127,11 @@ bool block::createColor(block::colors createColor)
 			pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::DarkOrange), &paintColor[createColor]);
 			break;
 		}
+		case block::colors::lightGray:
+		{
+			pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightGray), &paintColor[createColor]);
+			break;
+		}
 		default:
 		{
 			break;
