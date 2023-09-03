@@ -128,7 +128,7 @@ bool textBox::textSizeFit()
         overhangs.top > -margin || overhangs.bottom > -margin)
     {
         pTextLayout->GetFontSize(0, &fontSize);
-        pTextLayout->SetFontSize(fontSize - 5, fullRange);
+        pTextLayout->SetFontSize(fontSize - 1, fullRange);
         pTextLayout->GetOverhangMetrics(&overhangs);
     }
 
@@ -136,7 +136,7 @@ bool textBox::textSizeFit()
         overhangs.top < -margin && overhangs.bottom < -margin)
     {
         pTextLayout->GetFontSize(0, &fontSize);
-        pTextLayout->SetFontSize(fontSize + 5, fullRange);
+        pTextLayout->SetFontSize(fontSize + 1, fullRange);
         pTextLayout->GetOverhangMetrics(&overhangs);
     }
 
