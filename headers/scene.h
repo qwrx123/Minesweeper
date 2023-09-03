@@ -34,7 +34,6 @@ public:
     struct mySettings {
         int version;
         int effectVolume;
-        int boardSize;
         game::difficulty difficulty;
         wchar_t name[20];
     };
