@@ -15,6 +15,7 @@ bool opened;
 bool& whenDied;
 wchar_t bombText[2];
 bool flag;
+bool start;
 public:
 minesweeperBlock(ID2D1HwndRenderTarget* renderTarget, block::location setLocation, RECT screenSize, 
         IDWriteFactory* pDWriteFactory, const wchar_t myText[], bool& clickedBomb, block::style myStyle = block::boarder);
@@ -26,6 +27,8 @@ void addBomb();
 void setBomb();
 bool checkBomb();
 void open();
+void setStart();
+bool getStart();
 void toggleFlag();
 bool getFlag();
 bool checkOpen();

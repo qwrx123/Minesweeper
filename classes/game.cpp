@@ -1,16 +1,17 @@
 #include "../headers/game.h"
 #include "../headers/scene.h"
 
-const int game::numMines[game::difficulty::numDifficulty] = {10, 20, 30};
-const block::location game::gameSquareBoundary = {0.21, 0.3, 0.4, 0.74};
+const int game::numMines[game::difficulty::numDifficulty] = {10, 40, 30, 99};
+const int game::boardSizes[game::difficulty::numDifficulty][2] = {{10, 10},{16, 13},{16, 16},{30, 16}};
+const block::location game::gameSquareBoundary = {0.21, 0.05, 0.9, 0.74};
 
-game::game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], int width, int height, game::difficulty currentDifficulty, songManager& effectGenerator)
-	:count(0), blocksWidth(width), blocksHeight(height), dead(false), win(false), runningTime(0),
-	scoreLabel(renderTarget, {0.05, 0.05, 0.15, 0.05}, screenSize, pDWriteFactory, L"Score"), 
-    scoreDisplay(renderTarget, {0.1, 0.05, 0.15, 0.05}, screenSize, pDWriteFactory, L"0"),
+game::game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], game::difficulty currentDifficulty, songManager& effectGenerator)
+	:count(0), blocksWidth(boardSizes[(int)currentDifficulty][0]), blocksHeight(boardSizes[(int)currentDifficulty][1]), dead(false), win(false), runningTime(0),
+	flagsLabel(renderTarget, {0.05, 0.05, 0.15, 0.05}, screenSize, pDWriteFactory, L"Flags"), 
+    flagsDisplay(renderTarget, {0.1, 0.05, 0.15, 0.05}, screenSize, pDWriteFactory, L"0"),
 	timeLabel(renderTarget, {0.05, 0.8, 0.15, 0.05}, screenSize, pDWriteFactory, L"Time"), 
     timeDisplay(renderTarget, {0.1, 0.8, 0.15, 0.05}, screenSize, pDWriteFactory, L"0"),
-	effectGenerator(std::move(effectGenerator)), firstClick(true), numBombs(20)
+	effectGenerator(std::move(effectGenerator)), firstClick(true), numBombs(numMines[(int)currentDifficulty]), numOpened(0)
 {
 	wcsncpy(currentMetrics.name, playerName, 20);
 	for (int i = 0; i < blocksWidth; i++)
@@ -24,8 +25,8 @@ game::game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, 
 	{
 		keys[i] = false;
 	}
-	currentMetrics.score = 0;
-	helper::intToText(currentMetrics.scoreText, 9, currentMetrics.score);
+	currentMetrics.flags = 0;
+	helper::intToText(currentMetrics.flagsText, 9, currentMetrics.flags);
 	currentMetrics.time = 0;
 	helper::intToText(currentMetrics.timeText, 9, currentMetrics.time);
 	currentMetrics.difficulty = currentDifficulty;
@@ -93,8 +94,8 @@ void game::render()
 			renderScreenBlocks[i][j]->render();
 		}
 	}
-	scoreLabel.render();
-    scoreDisplay.render();
+	flagsLabel.render();
+    flagsDisplay.render();
 	timeLabel.render();
     timeDisplay.render();
 }
@@ -132,8 +133,8 @@ void game::resize(RECT newScreen)
 			renderScreenBlocks[i][j]->resize({((middle.y - blockSize*(blocksHeight/2.0f)) + j*blockSize)/newScreen.bottom, ((middle.x - blockSize*(blocksWidth/2.0f)) + i*blockSize)/newScreen.right, blockSize/newScreen.right, blockSize/newScreen.bottom}, newScreen);
 		}
 	}
-	scoreLabel.resize(newScreen);
-    scoreDisplay.resize(newScreen);
+	flagsLabel.resize(newScreen);
+    flagsDisplay.resize(newScreen);
 	timeLabel.resize(newScreen);
     timeDisplay.resize(newScreen);
 	gameSquare = {(middle.y - blockSize*(blocksHeight/2.0f))/newScreen.bottom, (middle.x - blockSize*(blocksWidth/2.0f))/newScreen.right, (blockSize*blocksWidth)/newScreen.right, (blockSize*blocksHeight)/newScreen.bottom};
@@ -169,47 +170,47 @@ void game::onClick(D2D1_POINT_2F clicked)
 	posX *= blocksWidth;
     float boxHeight = gameSquare.height * screenSize.bottom;
     float mousePercentH = clicked.y - gameSquare.top * screenSize.bottom;
-    float posY = mousePercentH/boxWidth;
+    float posY = mousePercentH/boxHeight;
     posY *= blocksHeight;
-	if ((int)posX >= blocksWidth || (int)posY >= blocksHeight)
+	if ((int)posX >= blocksWidth || (int)posY >= blocksHeight || (int)posX < 0 || (int)posY < 0)
 	{
 		return;
 	}
 	if (firstClick)
 	{
-		renderScreenBlocks[(int)posX][(int)posY]->open();
+		renderScreenBlocks[(int)posX][(int)posY]->setStart();
 
 		if ((int)posX > 0 && (int)posY > 0)
 		{
-			renderScreenBlocks[(int)posX-1][(int)posY-1]->open();
+			renderScreenBlocks[(int)posX-1][(int)posY-1]->setStart();
 		}
 		if ((int)posY > 0)
 		{
-			renderScreenBlocks[(int)posX][(int)posY-1]->open();
+			renderScreenBlocks[(int)posX][(int)posY-1]->setStart();
 		}
 		if ((int)posX < blocksWidth-1 && (int)posY > 0)
 		{
-			renderScreenBlocks[(int)posX+1][(int)posY-1]->open();
+			renderScreenBlocks[(int)posX+1][(int)posY-1]->setStart();
 		}
 		if ((int)posX > 0)
 		{
-			renderScreenBlocks[(int)posX-1][(int)posY]->open();
+			renderScreenBlocks[(int)posX-1][(int)posY]->setStart();
 		}
 		if ((int)posX < blocksWidth-1)
 		{
-			renderScreenBlocks[(int)posX+1][(int)posY]->open();
+			renderScreenBlocks[(int)posX+1][(int)posY]->setStart();
 		}
 		if ((int)posX > 0 && (int)posY < blocksHeight-1)
 		{
-			renderScreenBlocks[(int)posX-1][(int)posY+1]->open();
+			renderScreenBlocks[(int)posX-1][(int)posY+1]->setStart();
 		}
 		if ((int)posY < blocksHeight - 1)
 		{
-			renderScreenBlocks[(int)posX][(int)posY+1]->open();
+			renderScreenBlocks[(int)posX][(int)posY+1]->setStart();
 		}
 		if ((int)posX < blocksWidth - 1 && (int)posY < blocksHeight - 1)
 		{
-			renderScreenBlocks[(int)posX+1][(int)posY+1]->open();
+			renderScreenBlocks[(int)posX+1][(int)posY+1]->setStart();
 		}
 		calculateBombs();
 		firstClick = false;
@@ -225,13 +226,23 @@ void game::onRClick(D2D1_POINT_2F clicked)
 	posX *= blocksWidth;
     float boxHeight = gameSquare.height * screenSize.bottom;
     float mousePercentH = clicked.y - gameSquare.top * screenSize.bottom;
-    float posY = mousePercentH/boxWidth;
+    float posY = mousePercentH/boxHeight;
     posY *= blocksHeight;
 	if ((int)posX >= blocksWidth || (int)posY >= blocksHeight)
 	{
 		return;
 	}
 	renderScreenBlocks[(int)posX][(int)posY]->toggleFlag();
+	if (renderScreenBlocks[(int)posX][(int)posY]->getFlag())
+	{
+		currentMetrics.flags++;
+	}
+	else
+	{
+		currentMetrics.flags--;
+	}
+	helper::intToText(currentMetrics.flagsText, 9, currentMetrics.flags);
+	flagsDisplay.changeText(currentMetrics.flagsText);
 }
 void game::updateBoard(int x, int y)
 {
@@ -241,7 +252,8 @@ void game::updateBoard(int x, int y)
 	}
 
 	renderScreenBlocks[x][y]->open();
-
+	numOpened++;
+	win = numOpened == blocksWidth * blocksHeight - numBombs;
 	if (renderScreenBlocks[x][y]->getNumBombs() > 0)
 	{
 		return;
@@ -298,7 +310,7 @@ void game::calculateBombs()
 	int bombY = distribH(gen);
 	for (int i = 0; i < numBombs; i++)
 	{
-		while(renderScreenBlocks[bombX][bombY]->checkBomb() || renderScreenBlocks[bombX][bombY]->checkOpen())
+		while(renderScreenBlocks[bombX][bombY]->checkBomb() || renderScreenBlocks[bombX][bombY]->getStart())
 		{
 			bombX = distribW(gen);
 			bombY = distribH(gen);

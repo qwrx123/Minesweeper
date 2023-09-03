@@ -32,23 +32,24 @@ enum difficulty
 struct gameMetrics
 {
 	wchar_t name[20];
-	int score;
-	wchar_t scoreText[10];
+	int flags;
+	wchar_t flagsText[10];
 	int time;
 	wchar_t timeText[10];
 	difficulty difficulty;
 };
-static const int numMines[numDifficulty];
 private:
-textBox scoreLabel;
-textBox scoreDisplay;
+static const int numMines[numDifficulty];
+const static int boardSizes[numDifficulty][2];
+textBox flagsLabel;
+textBox flagsDisplay;
 textBox timeLabel;
 textBox timeDisplay;
 gameMetrics currentMetrics;
 float runningTime;
 int blocksWidth;
 int blocksHeight;
-minesweeperBlock* renderScreenBlocks[25][25];
+minesweeperBlock* renderScreenBlocks[30][30];
 static const block::location gameSquareBoundary;
 RECT screenSize;
 block::location game::gameSquare;
@@ -60,9 +61,10 @@ bool dead;
 bool win;
 bool firstClick;
 int numBombs;
+int numOpened;
 songManager effectGenerator;
 public:
-game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], int width, int height, game::difficulty currentDifficulty, songManager& effectGenerator);
+game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, RECT screenSize, wchar_t playerName[20], game::difficulty currentDifficulty, songManager& effectGenerator);
 ~game();
 void render();
 void gameLoop();

@@ -14,7 +14,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE, _In_ PWSTR pCm
 {
     MinesweeperWindow win;
 	
-    if (!win.Create(L"Snake", WS_OVERLAPPEDWINDOW))
+    if (!win.Create(L"Minesweeper", WS_OVERLAPPEDWINDOW))
     {
         return 0;
     }

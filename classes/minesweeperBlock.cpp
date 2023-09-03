@@ -4,7 +4,7 @@
 minesweeperBlock::minesweeperBlock(ID2D1HwndRenderTarget* renderTarget, block::location setLocation, RECT screenSize, 
         IDWriteFactory* pDWriteFactory, const wchar_t myText[], bool& clickedBomb, block::style myStyle)
     :clickableTextBox(renderTarget, setLocation, screenSize, pDWriteFactory, myText, myStyle),
-	numBombs(0), bomb(false), whenDied(clickedBomb), opened(false), flag(false)
+	numBombs(0), bomb(false), whenDied(clickedBomb), opened(false), flag(false), start(false)
 {
 	bombText[1] = L'\0';
 	helper::intToText(bombText, 1, numBombs);
@@ -92,6 +92,7 @@ void minesweeperBlock::open()
 	else
 	{
 		opened = true;
+		block::changeColor(block::colors::lightGray);
 	}
 }
 
@@ -111,20 +112,22 @@ void minesweeperBlock::toggleFlag()
 	{
 		return;
 	}
-	
+
 	flag = !flag;
 
-	if (flag)
-	{
-		block::changeColor(block::colors::red);
-	}
-	else
-	{
-		block::changeColor(block::colors::white);
-	}
 }
 
 bool minesweeperBlock::getFlag()
 {
 	return flag;
+}
+
+void minesweeperBlock::setStart()
+{
+	start = true;
+}
+
+bool minesweeperBlock::getStart()
+{
+	return start;
 }
