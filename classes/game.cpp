@@ -31,7 +31,7 @@ game::game(ID2D1HwndRenderTarget* renderTarget, IDWriteFactory* pDWriteFactory, 
 	helper::intToText(currentMetrics.timeText, 9, currentMetrics.time);
 	currentMetrics.difficulty = currentDifficulty;
 
-
+	effectGenerator.playEffectSound(songManager::effectTypes::START);
 }
 
 game::~game()
@@ -250,7 +250,7 @@ void game::updateBoard(int x, int y)
 	{
 		return;
 	}
-
+	effectGenerator.playEffectSound(songManager::effectTypes::CLICK);
 	renderScreenBlocks[x][y]->open();
 	numOpened++;
 	win = numOpened == blocksWidth * blocksHeight - numBombs;

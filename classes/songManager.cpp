@@ -15,11 +15,23 @@ songManager::songManager(HWND hwnd)
 
     lpDevice->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
 
-
+	CreateSecondaryBuffer(lpDevice, &pclickEffectBuffer, L"click");
+	CreateSecondaryBuffer(lpDevice, &ploseEffectBuffer, L"lose");
+	CreateSecondaryBuffer(lpDevice, &pstartEffectBuffer, L"start");
+	CreateSecondaryBuffer(lpDevice, &pwinEffectBuffer, L"win");
 
     changeSongVolume(0);
     changeEffectVolume(0);
 
+	playEffectSound(effectTypes::START);
+	playEffectSound(effectTypes::CLICK);
+	playEffectSound(effectTypes::WIN);
+	playEffectSound(effectTypes::LOSE);
+
+	pclickEffectBuffer->Stop();
+	ploseEffectBuffer->Stop();
+	pstartEffectBuffer->Stop();
+	pwinEffectBuffer->Stop();
     switchSongType(songTypes::NONE);
 }
 
@@ -55,9 +67,37 @@ void songManager::switchSongType(songManager::songTypes swapType)
     }
 }
 
-void songManager::playEffectSound()
+void songManager::playEffectSound(songManager::effectTypes playEffect)
 {
-
+	switch (playEffect)
+	{
+		case effectTypes::START:
+		{
+			pstartEffectBuffer->SetCurrentPosition(0);
+			pstartEffectBuffer->Play(0, 0, 0);
+			break;
+		}
+		case effectTypes::CLICK:
+		{
+			pclickEffectBuffer->SetCurrentPosition(0);
+			pclickEffectBuffer->Play(0, 0, 0);
+			break;
+		}
+		case effectTypes::WIN:
+		{
+			pclickEffectBuffer->Stop();
+			pwinEffectBuffer->SetCurrentPosition(0);
+			pwinEffectBuffer->Play(0, 0, 0);
+			break;
+		}
+		case effectTypes::LOSE:
+		{
+			pclickEffectBuffer->Stop();
+			ploseEffectBuffer->SetCurrentPosition(0);
+			ploseEffectBuffer->Play(0, 0, 0);
+			break;
+		}
+	}
 }
 
 void songManager::setGameSong(int type)

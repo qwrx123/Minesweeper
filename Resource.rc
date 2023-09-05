@@ -33,6 +33,10 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
+    "click WAVE assets/click.wav\r\n"
+    "start WAVE assets/start.wav\r\n"
+    "lose WAVE assets/lose.wav\r\n"
+    "win WAVE assets/win.wav\r\n"
     "MAINICON ICON assets/Icon.ico\0"
 END
 
@@ -48,6 +52,10 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
+click WAVE assets/click.wav
+start WAVE assets/start.wav
+lose WAVE assets/lose.wav
+win WAVE assets/win.wav
 MAINICON ICON assets/Icon.ico
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED

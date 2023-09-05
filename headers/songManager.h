@@ -22,6 +22,13 @@ enum songTypes
     GAME,
     DEATH
 };
+enum effectTypes
+{
+	START,
+	CLICK,
+	WIN,
+	LOSE
+};
 private:
 struct waveFile {
 	char ChunkID[4];
@@ -39,7 +46,10 @@ struct waveFile {
 	int Subchunk2Size;
 };
 LPDIRECTSOUND8 lpDevice;
-
+LPDIRECTSOUNDBUFFER8 pclickEffectBuffer = NULL;
+LPDIRECTSOUNDBUFFER8 ploseEffectBuffer = NULL;
+LPDIRECTSOUNDBUFFER8 pstartEffectBuffer = NULL;
+LPDIRECTSOUNDBUFFER8 pwinEffectBuffer = NULL;
 int musicVolume;
 int effectVolume;
 public:
@@ -48,7 +58,7 @@ songManager(HWND hwnd);
 void changeSongVolume(int volume);
 void changeEffectVolume(int volume);
 void switchSongType(songManager::songTypes swapType);
-void playEffectSound();
+void playEffectSound(songManager::effectTypes playEffect);
 void setGameSong(int song);
 private:
 void changeVolume(LPDIRECTSOUNDBUFFER8 theSoundBuffer, int volume);
